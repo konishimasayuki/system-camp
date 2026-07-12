@@ -260,8 +260,10 @@ details[open] .plus{transform:rotate(45deg)}
 .ins-cell.active{border-color:var(--amber);transform:translateY(-4px);box-shadow:0 12px 28px rgba(255,194,75,.18)}
 .ins-cell{height:0;padding-top:153.7%}
 .ins-cell img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
-.ins-cell:nth-child(2){background:#0d1220}
-.ins-cell:nth-child(2) img{transform:scale(.84);transform-origin:50% 42%;border-radius:8px}
+.ins-cell:nth-child(2){background:transparent;border-color:transparent!important;box-shadow:none!important}
+.ins-cell:nth-child(2) img{transform:scale(.84);transform-origin:50% 45%;border-radius:12px;box-shadow:0 0 0 1px rgba(255,255,255,.14)}
+.ins-cell:nth-child(2).active img{box-shadow:0 0 0 1.5px var(--amber),0 12px 28px rgba(255,194,75,.18)}
+.ins-cell:nth-child(2) span{left:calc(8% + 8px);bottom:calc(8% + 6px)}
 .ins-cell span{position:absolute;left:8px;bottom:6px;font-family:var(--mono);font-size:10px;color:#fff;background:rgba(10,14,26,.72);padding:2px 8px;border-radius:99px}
 .ins-aq{margin-top:12px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.15);position:relative}
 .ins-aq img{width:100%;display:block}
@@ -479,7 +481,7 @@ body.ld-lock{overflow:hidden;height:100vh}
 <header>
   <div class="wrap nav">
     <a class="logo" href="#top"><em>&gt;_</em>システム開発CAMP<span class="cursor-block"></span></a>
-    <a class="nav-cta" href="#apply">お問い合わせ</a>
+    <a class="nav-cta" href="#apply" onclick="return goApply(event)">お問い合わせ</a>
   </div>
 </header>
 
@@ -499,7 +501,7 @@ body.ld-lock{overflow:hidden;height:100vh}
         <span>卒業後は<b>外注パートナー</b></span>
       </div>
       <div class="hero-cta-row">
-        <a class="btn btn-primary" href="#apply">お問い合わせはこちら <span class="arrow">→</span></a>
+        <a class="btn btn-primary" href="#apply" onclick="return goApply(event)">お問い合わせはこちら <span class="arrow">→</span></a>
         <a class="btn btn-ghost" href="#why-free">なぜ無料? <span class="arrow">↓</span></a>
       </div>
     </div>
@@ -900,7 +902,7 @@ body.ld-lock{overflow:hidden;height:100vh}
 </footer>
 
 <div class="sticky-cta">
-  <a href="#apply">＼受講料¥0／ お問い合わせはこちら →</a>
+  <a href="#apply" onclick="return goApply(event)">＼受講料¥0／ お問い合わせはこちら →</a>
 </div>
 
 <script>
@@ -1048,14 +1050,18 @@ body.ld-lock{overflow:hidden;height:100vh}
 </script>
 
 <script>
-// #apply へのリンクはURLを変えずにスクロールだけ行う
-document.addEventListener('click',function(e){
-  var a=e.target.closest('a[href="#apply"]');
-  if(!a)return;
-  e.preventDefault();
+// お問い合わせへ移動(URLは一切変えない)
+function goApply(e){
+  if(e){e.preventDefault();e.stopPropagation();}
   var t=document.getElementById('apply');
   if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  return false;
+}
+// 保険: 万一 #apply がURLに付いたら即座に除去
+window.addEventListener('hashchange',function(){
+  if(location.hash==='#apply') history.replaceState(null,'',location.pathname+location.search);
 });
+if(location.hash==='#apply'){history.replaceState(null,'',location.pathname+location.search);}
 </script>
 </body>
 </html>
