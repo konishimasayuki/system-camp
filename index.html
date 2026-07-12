@@ -362,9 +362,108 @@ footer{background:#080b14;color:#5a6480;padding:38px 0;font-size:12.5px}
   .reveal{opacity:1;transform:none}
   .term-body div{opacity:1;transform:none}
 }
+
+/* ============ TERMINAL BOOT LOADER ============ */
+#loader{position:fixed;inset:0;z-index:9999;background:#0a0e1a;display:flex;align-items:center;justify-content:center;overflow:hidden}
+/* スキャンライン */
+#loader::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(126,231,135,.028) 2px 4px);pointer-events:none;z-index:1}
+/* 走査バー */
+#loader::after{content:"";position:absolute;left:0;right:0;height:90px;background:linear-gradient(180deg,transparent,rgba(126,231,135,.05),transparent);animation:ldScan 3.2s linear infinite;z-index:1}
+@keyframes ldScan{0%{top:-90px}100%{top:100%}}
+.ld-glow{position:absolute;width:560px;height:560px;border-radius:50%;background:radial-gradient(circle,rgba(46,91,255,.16),rgba(126,231,135,.06) 45%,transparent 70%);filter:blur(24px);animation:ldGlow 2.6s ease-in-out infinite}
+@keyframes ldGlow{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.1);opacity:1}}
+.ld-inner{position:relative;z-index:2;width:min(88vw,520px);font-family:var(--mono)}
+/* ブートログ */
+.ld-log{height:96px;overflow:hidden;margin-bottom:22px}
+.ld-ln{font-size:clamp(10px,2.6vw,12.5px);line-height:1.9;color:var(--term-dim);opacity:0;transform:translateY(6px)}
+.ld-ln .ok{color:var(--term-green)}
+.ld-ln .cmd{color:#c9d4f5}
+.ld-ln .amb{color:var(--amber)}
+.ld-play .ld-ln{animation:ldLnIn .28s ease var(--d) forwards}
+@keyframes ldLnIn{to{opacity:1;transform:none}}
+/* ロゴ（グリッチ登場） */
+.ld-logo{display:flex;align-items:center;justify-content:center;gap:8px;margin:6px 0 8px;opacity:0;filter:blur(6px);transform:scale(.94)}
+.ld-play .ld-logo{animation:ldLogoIn .55s cubic-bezier(.2,.9,.3,1.1) 1.75s forwards}
+@keyframes ldLogoIn{0%{opacity:0;filter:blur(6px);transform:scale(.94)}55%{opacity:1;filter:blur(0);transform:scale(1.015)}70%{transform:scale(1) translateX(-2px)}80%{transform:translateX(2px)}100%{opacity:1;filter:blur(0);transform:none}}
+.ld-logo .pr{font-family:var(--mono);font-weight:600;font-size:clamp(22px,6vw,34px);color:var(--term-green);text-shadow:0 0 18px rgba(126,231,135,.55)}
+.ld-logo .nm{font-family:var(--disp);font-weight:900;font-size:clamp(24px,6.6vw,40px);color:#fff;letter-spacing:.01em}
+.ld-logo .cur{width:.55em;height:1.15em;background:var(--term-green);display:inline-block;margin-left:6px;animation:ldCur .9s steps(1) infinite;box-shadow:0 0 14px rgba(126,231,135,.7);align-self:center}
+@keyframes ldCur{0%,49%{opacity:1}50%,100%{opacity:0}}
+.ld-sub{text-align:center;font-family:var(--mono);font-size:clamp(9px,2.3vw,11px);letter-spacing:.34em;color:rgba(139,150,184,.85);margin-bottom:26px;opacity:0}
+.ld-play .ld-sub{animation:ldLnIn .4s ease 2.15s forwards}
+/* ASCII風プログレス */
+.ld-pwrap{opacity:0}
+.ld-play .ld-pwrap{animation:ldLnIn .35s ease 2.3s forwards}
+.ld-ptop{display:flex;justify-content:space-between;font-size:clamp(9px,2.3vw,11px);color:var(--term-dim);margin-bottom:7px}
+.ld-ptop .st{color:var(--term-green)}
+.ld-bar{height:8px;background:rgba(255,255,255,.07);border:1px solid rgba(126,231,135,.25);border-radius:3px;overflow:hidden;position:relative}
+.ld-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--electric),var(--term-green));box-shadow:0 0 14px rgba(126,231,135,.6);transition:width .16s ease;position:relative}
+.ld-fill::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 8px,rgba(10,14,26,.35) 8px 10px)}
+/* 開幕：上下split */
+#loader .ld-panel{position:absolute;left:0;width:100%;height:50.5%;background:#0a0e1a;z-index:3;pointer-events:none;opacity:0}
+#loader.open{background:transparent}
+#loader.open::before,#loader.open::after,#loader.open .ld-glow{opacity:0;transition:opacity .25s}
+#loader.open .ld-panel{opacity:1}
+#loader.open .ld-panel.top{top:0;animation:ldSplitUp .7s cubic-bezier(.7,0,.2,1) forwards}
+#loader.open .ld-panel.bottom{bottom:0;animation:ldSplitDown .7s cubic-bezier(.7,0,.2,1) forwards}
+#loader.open .ld-inner{animation:ldOut .35s ease forwards}
+@keyframes ldSplitUp{to{transform:translateY(-101%)}}
+@keyframes ldSplitDown{to{transform:translateY(101%)}}
+@keyframes ldOut{to{opacity:0;transform:scale(1.06)}}
+#loader.done{display:none}
+body.ld-lock{overflow:hidden;height:100vh}
 </style>
 </head>
 <body>
+<!-- ===== TERMINAL BOOT LOADER ===== -->
+<div id="loader">
+  <div class="ld-glow"></div>
+  <div class="ld-inner">
+    <div class="ld-log">
+      <div class="ld-ln" style="--d:.15s"><span class="cmd">$ boot system-camp <span class="amb">--ai-driven</span></span></div>
+      <div class="ld-ln" style="--d:.55s"><span class="ok">✓</span> AI駆動開発モジュール <span class="ok">loaded</span></div>
+      <div class="ld-ln" style="--d:.90s"><span class="ok">✓</span> 実案件カリキュラム <span class="ok">ready</span></div>
+      <div class="ld-ln" style="--d:1.25s"><span class="ok">✓</span> 受講料 <span class="amb">¥0</span> <span class="ok">confirmed</span></div>
+    </div>
+    <div class="ld-logo"><span class="pr">&gt;_</span><span class="nm">システム開発CAMP</span><span class="cur"></span></div>
+    <div class="ld-sub">AI-DRIVEN DEV BOOTCAMP</div>
+    <div class="ld-pwrap">
+      <div class="ld-ptop"><span class="st">INITIALIZING...</span><span id="ldPct">0%</span></div>
+      <div class="ld-bar"><div class="ld-fill" id="ldFill"></div></div>
+    </div>
+  </div>
+  <div class="ld-panel top"></div>
+  <div class="ld-panel bottom"></div>
+</div>
+<script>
+(function(){
+  if('scrollRestoration' in history) history.scrollRestoration='manual';
+  window.scrollTo(0,0);
+  window.addEventListener('pageshow',function(){window.scrollTo(0,0);});
+  var loader=document.getElementById('loader');
+  var fill=document.getElementById('ldFill');
+  var pct=document.getElementById('ldPct');
+  var st=loader.querySelector('.ld-ptop .st');
+  document.body.classList.add('ld-lock');
+  requestAnimationFrame(function(){loader.classList.add('ld-play');});
+  var p=0;
+  setTimeout(function tick(){
+    p += p<65 ? (9+Math.random()*11) : p<90 ? (2.5+Math.random()*3.5) : 9;
+    if(p>100)p=100;
+    fill.style.width=p+'%';
+    pct.textContent=Math.floor(p)+'%';
+    if(p<100){ setTimeout(tick, 85+Math.random()*75); }
+    else{
+      st.textContent='SYSTEM READY';
+      setTimeout(function(){
+        loader.classList.add('open');
+        document.body.classList.remove('ld-lock');
+        setTimeout(function(){ loader.classList.add('done'); }, 750);
+      }, 420);
+    }
+  }, 2350);
+})();
+</script>
 
 <header>
   <div class="wrap nav">
