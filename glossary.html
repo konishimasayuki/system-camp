@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用語辞典 | システム開発CAMP</title>
+<meta name="description" content="システム開発CAMPで使うツール・用語の辞典。GitHub、Vercel、GASなどを未経験者向けにやさしく解説。">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@700;900&family=Noto+Sans+JP:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0d1220;--paper:#f5f6fa;--amber:#ffc24b;--elec:#2e5bff;--elec-d:#1e3fb8;--green:#1f8f4d;--sub:#4a5268;--dim:#8b93ab;--line:#e2e6f0;
+--disp:'Zen Kaku Gothic New','Noto Sans JP',sans-serif;--body:'Noto Sans JP',sans-serif;--mono:'IBM Plex Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background-color:var(--paper)}
+body{font-family:var(--body);color:var(--ink);line-height:1.8;-webkit-font-smoothing:antialiased;min-height:100vh}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px 90px}
+header{padding:52px 0 8px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--elec-d)}
+h1{font-family:var(--disp);font-weight:900;font-size:clamp(28px,6vw,42px);margin-top:10px;line-height:1.5;color:var(--ink)}
+h1 em{font-style:normal;background:linear-gradient(transparent 62%,rgba(255,194,75,.75) 62%)}
+.lead{color:var(--sub);font-size:14px;margin-top:10px}
+/* 検索 */
+.searchbox{position:sticky;top:0;z-index:10;background:rgba(245,246,250,.94);backdrop-filter:blur(10px);padding:16px 0 12px;margin-top:20px;border-bottom:1px solid var(--line)}
+.sinput{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #cdd4e4;border-radius:99px;padding:13px 20px;box-shadow:0 2px 10px rgba(13,18,32,.05)}
+.sinput svg{flex-shrink:0}
+.sinput input{flex:1;background:none;border:none;outline:none;color:var(--ink);font-size:16px;font-family:var(--body)}
+.sinput input::placeholder{color:#9aa2b8}
+.cats{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.cat{font-size:12.5px;font-weight:700;border:1.5px solid #c6cdde;color:var(--sub);padding:7px 15px;border-radius:99px;cursor:pointer;background:#fff;font-family:var(--body);transition:all .15s ease}
+.cat.on{background:var(--elec);border-color:var(--elec);color:#fff}
+.count{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:10px}
+/* カード */
+.section-title{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--elec-d);margin:34px 0 14px;font-weight:600}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px 22px 20px;margin-bottom:14px;box-shadow:0 2px 12px rgba(13,18,32,.05)}
+.card .head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.card .term{font-family:var(--disp);font-weight:900;font-size:21px;color:var(--ink)}
+.card .en{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.card .tag{margin-left:auto;font-size:10.5px;font-weight:900;color:var(--ink);background:var(--amber);padding:3px 10px;border-radius:99px;white-space:nowrap}
+.card .one{margin-top:12px;font-size:15px;font-weight:900;color:var(--ink)}
+.card .one span{background:linear-gradient(transparent 62%,rgba(255,194,75,.65) 62%)}
+.card dl{margin-top:10px}
+.card dt{font-family:var(--mono);font-size:11px;color:var(--green);letter-spacing:.08em;margin-top:12px;font-weight:600}
+.card dd{font-size:13.5px;color:var(--sub);margin-top:2px}
+.card dd b{color:var(--ink)}
+.noresult{display:none;text-align:center;color:var(--dim);padding:60px 0;font-size:14px}
+footer{text-align:center;color:var(--dim);font-size:12px;padding:30px 0;border-top:1px solid var(--line)}
+footer a{color:var(--elec-d);text-decoration:none;font-weight:700}
+@media(max-width:640px){.card .tag{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">// SYSTEM-CAMP GLOSSARY v1.0</p>
+  <h1>用語辞典 —— <em>これだけ知ってれば大丈夫。</em></h1>
+  <p class="lead">CAMPで登場するツールと用語を、たとえ話つきでやさしく解説。わからない言葉が出てきたら、ここで検索してください。</p>
+</header>
+
+<div class="searchbox">
+  <div class="sinput">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9aa2b8" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+    <input id="q" type="search" placeholder="用語を検索(例: GitHub、デプロイ)">
+  </div>
+  <div class="cats" id="cats">
+    <button class="cat on" data-cat="all">すべて</button>
+    <button class="cat" data-cat="basic">基本ツール</button>
+    <button class="cat" data-cat="ai">AI開発</button>
+    <button class="cat" data-cat="web">Web開発</button>
+    <button class="cat" data-cat="auto">自動化・連携</button>
+    <button class="cat" data-cat="word">よく出る言葉</button>
+  </div>
+  <p class="count" id="count"></p>
+</div>
+
+<div id="list"></div>
+<p class="noresult" id="noresult">見つかりませんでした。別の言葉で検索してみてください。<br>(この辞典に載せてほしい用語があれば、講師に教えてください!)</p>
+
+<footer>システム開発CAMP 用語辞典 / <a href="https://system-camp.vercel.app/">system-camp.vercel.app</a></footer>
+</div>
+
+<script>
+const TERMS = [
+// ===== 基本ツール =====
+{c:"basic",t:"GitHub",e:"ギットハブ",one:"作ったコードを保管する「クラウドの金庫」。",
+ what:"コード(プログラムのファイル)をインターネット上に保存しておく場所。誰がいつ何を変えたかの履歴も全部残る。",
+ camp:"CAMPでは作ったシステムのコードを全部ここに置きます。Vercelと連携させると、GitHubにコードを置くだけでWebに公開される「デプロイの起点」になります。"},
+{c:"basic",t:"Vercel",e:"ヴァーセル",one:"作ったWebサイトを世界に公開してくれる「無料の土地」。",
+ what:"WebサイトやWebアプリをインターネット上に公開(ホスティング)してくれるサービス。GitHubと繋ぐと、コードを更新するだけで自動的にサイトも更新される。",
+ camp:"CAMPの成果物は基本Vercelで公開します。「GitHubにアップ→Vercelが自動で公開」がCAMPの黄金パターン。無料枠で十分戦えます。"},
+{c:"basic",t:"Git",e:"ギット",one:"「誰が・いつ・どこを変えたか」を記録するタイムマシン。",
+ what:"ファイルの変更履歴を記録する仕組み。失敗しても過去の状態に戻せる。GitHubはこのGitの仕組みをクラウド上で使えるようにしたサービス。",
+ camp:"最初は「GitHubの土台になってる仕組み」という理解でOK。ブラウザ上のGitHub操作だけでも開発は進められます。"},
+{c:"basic",t:"リポジトリ",e:"repository",one:"プロジェクト1個分の「保管箱」。",
+ what:"GitHub上でコードを保管する単位。1つのシステム=1つのリポジトリと考えるとわかりやすい。「リポジトリを作る」=「新しいプロジェクトの箱を用意する」。",
+ camp:"CAMPでは案件ごとにリポジトリを作ります。公開(Public)と非公開(Private)が選べて、仕事の案件は基本Privateです。"},
+{c:"basic",t:"コミット / プッシュ",e:"commit / push",one:"「変更をセーブ」して「クラウドに送る」。ゲームのセーブと同じ。",
+ what:"コミット=変更内容を記録すること(セーブ)。プッシュ=その記録をGitHubに送ること(クラウド保存)。",
+ camp:"ブラウザでGitHubを直接編集する場合は「Commit changes」ボタン1つで両方やってくれます。まずはそれでOK。"},
+{c:"basic",t:"デプロイ",e:"deploy",one:"作ったものをインターネットに「公開する」こと。",
+ what:"自分のPCの中にしかなかったサイトやアプリを、世界中の人がURLでアクセスできる状態にすること。「本番に上げる」とも言う。",
+ camp:"CAMPでは「GitHubにコードを置く→Vercelが自動デプロイ」の流れ。デプロイが完了すると「https://○○.vercel.app」のURLが発行されます。"},
+
+// ===== AI開発 =====
+{c:"ai",t:"AI駆動開発",e:"AI-driven development",one:"コードは書かずに、AIに「指示」して作らせる開発スタイル。",
+ what:"要件を整理してAIに正しく指示を出し、生成されたコードを検証・修正しながらシステムを作る手法。暗記より「伝え方」が大事。",
+ camp:"CAMPの核心。文法を覚えるのではなく「何を・どう指示すれば良いものが出てくるか」の型を実案件で身につけます。"},
+{c:"ai",t:"プロンプト",e:"prompt",one:"AIへの「指示文」。発注書みたいなもの。",
+ what:"AIに入力する指示のこと。曖昧な指示には曖昧な答え、具体的な指示には具体的な答えが返る。プロンプトの質=成果物の質。",
+ camp:"「顧客管理システム作って」ではなく「誰が・何を・どういう時に使うか」まで書くのがCAMP流。良いプロンプトの型を教えます。"},
+{c:"ai",t:"Claude / ChatGPT",e:"クロード / チャットGPT",one:"開発を手伝ってくれるAIアシスタント。CAMPの相棒。",
+ what:"文章で指示すると、コードを書いたり設計を提案したりしてくれるAIサービス。ClaudeはAnthropic社、ChatGPTはOpenAI社が提供。",
+ camp:"CAMPでは主にClaudeを使ってシステムを開発します。このCAMPのLPも用語辞典も、Claudeへの指示だけで作られています。"},
+{c:"ai",t:"要件定義",e:"requirements definition",one:"作る前に「何を作るか」を決める、いちばん大事な工程。",
+ what:"誰が使うのか、何ができればいいのか、どんなデータを扱うのかを整理する作業。ここが曖昧だと、どんなに作っても使えないものになる。",
+ camp:"300社を見てきた講師の得意分野。「会社の困りごと→システムの要件」に翻訳する力こそ、CAMPで一番価値のあるスキルです。"},
+
+// ===== Web開発 =====
+{c:"web",t:"HTML / CSS / JavaScript",e:"エイチティーエムエル…",one:"Webページの「骨組み・見た目・動き」の3点セット。",
+ what:"HTML=ページの構造(文章や画像の配置)、CSS=デザイン(色・大きさ・レイアウト)、JavaScript=動き(ボタンを押したら○○する、など)。",
+ camp:"読めなくても大丈夫。AIが書いてくれるので、「どれが何の担当か」だけ知っていれば修正指示が出せます。"},
+{c:"web",t:"Next.js / React",e:"ネクストジェイエス / リアクト",one:"本格的なWebアプリを作るための「よくできた道具箱」。",
+ what:"JavaScriptでアプリを効率よく作るためのフレームワーク(枠組み)。ReactはUI部品を作る道具、Next.jsはそれをアプリとしてまとめ上げる道具。",
+ camp:"CAMPの実案件でよく登場します。Vercelとの相性が抜群で、「Next.jsで作ってVercelで公開」がプロの現場でも定番構成。"},
+{c:"web",t:"フロントエンド / バックエンド",e:"frontend / backend",one:"「お客さんに見える部分」と「裏側の仕組み」。",
+ what:"フロントエンド=画面(ユーザーが見て触る部分)。バックエンド=裏側の処理(データの保存、計算、通知など)。レストランでいうホールと厨房。",
+ camp:"AIに指示する時「これは画面の話か、裏側の話か」を区別できると、指示の精度が一気に上がります。"},
+{c:"web",t:"API",e:"エーピーアイ",one:"システム同士をつなぐ「窓口」。",
+ what:"あるサービスの機能を、別のプログラムから使うための接続口。「LINEのAPIを使う」=「LINEの機能(通知送信など)を自分のシステムから呼び出す」。",
+ camp:"CAMPの案件はAPI連携だらけ。LINE通知、地図、検索…「APIをつなぐと何ができるか」の感覚を実案件で掴みます。"},
+{c:"web",t:"データベース(DB)",e:"database",one:"システムの「データ保管庫」。巨大で高速なExcel。",
+ what:"顧客情報、注文履歴などのデータを整理して保存しておく場所。システムはここからデータを出し入れして動く。",
+ camp:"CAMPではUpstash Redis(クラウドのDB)やスプレッドシートをDB代わりに使うことが多いです。小規模ならそれで十分。"},
+{c:"web",t:"Upstash Redis",e:"アップスタッシュ レディス",one:"設定いらずで使える「クラウドのデータ置き場」。CAMP御用達。",
+ what:"クラウド上で使えるデータベースサービス。サーバーの管理が不要で、無料枠があり、小〜中規模のシステムに最適。",
+ camp:"講師の実案件(入金管理システムなど)でも現役稼働中。「とりあえずデータ保存したい」時の第一候補です。"},
+{c:"web",t:"FormSubmit",e:"フォームサブミット",one:"問い合わせフォームの内容を「メールに転送」してくれる無料サービス。",
+ what:"Webサイトのフォームに入力された内容を、指定したメールアドレスに送ってくれるサービス。サーバーやプログラム不要で使える。",
+ camp:"CAMPのLPの問い合わせフォームもこれ。「フォーム→メール」だけならこれで完結、というコスパ最強の選択肢です。"},
+{c:"web",t:"レスポンシブ",e:"responsive",one:"スマホでもPCでも「ちゃんと見える」ようにすること。",
+ what:"画面のサイズに合わせてレイアウトが自動で変わるデザインのこと。今はアクセスの大半がスマホなので必須。",
+ camp:"AIに「スマホ対応で」と一言添えるだけでレスポンシブになります。納品前のスマホ確認はCAMPの必須チェック項目。"},
+
+// ===== 自動化・連携 =====
+{c:"auto",t:"GAS(Google Apps Script)",e:"ガス / ジーエーエス",one:"スプレッドシートやGmailを「自動で動かす」Googleの仕組み。",
+ what:"Googleのサービス(スプレッドシート、Gmail、フォーム等)をプログラムで自動化できる無料ツール。「フォームが送信されたらLINEに通知」みたいなことができる。",
+ camp:"業務自動化の入り口として最強。講師も顧客管理・審査通知・入金消込など多数の実務システムをGASで作ってきました。1ヶ月目の教材です。"},
+{c:"auto",t:"スプレッドシート",e:"Google Sheets",one:"クラウド版Excel。実は「簡易データベース」としても優秀。",
+ what:"ブラウザで使える表計算ソフト。複数人で同時編集でき、GASと組み合わせると業務システムの土台になる。",
+ camp:"中小企業の業務は大体スプレッドシートに乗っています。「今あるシートを自動化する」のが、喜ばれるシステムの第一歩。"},
+{c:"auto",t:"LINE Messaging API",e:"ライン メッセージングエーピーアイ",one:"自分のシステムから「LINEに自動でメッセージを送る」仕組み。",
+ what:"LINE公式アカウントを通じて、プログラムからメッセージを送受信できるAPI。通知、リマインド、督促などに使える。",
+ camp:"「何かあったらLINEに通知」は日本の業務システムで一番喜ばれる機能。CAMPの実案件でも頻出です。"},
+{c:"auto",t:"Webhook",e:"ウェブフック",one:"「何かが起きたら、自動で知らせる」仕組み。呼び鈴みたいなもの。",
+ what:"あるサービスで出来事(フォーム送信、入金など)が起きた瞬間に、別のシステムへ自動で情報を送る仕組み。",
+ camp:"「フォーム送信→即LINE通知」のような連携の裏側はだいたいこれ。仕組みの名前として覚えておくと会話が楽になります。"},
+{c:"auto",t:"トリガー",e:"trigger",one:"「この条件になったら自動実行」の引き金。",
+ what:"「毎朝9時に実行」「フォームが送信されたら実行」など、プログラムを自動で動かすきっかけの設定。",
+ camp:"GASのトリガー設定はCAMP序盤で必ずやります。これを覚えると「人がやらなくていい仕事」がどんどん消せます。"},
+
+// ===== よく出る言葉 =====
+{c:"word",t:"ローカル / クラウド",e:"local / cloud",one:"「自分のPCの中」か「インターネット上」か。",
+ what:"ローカル=自分のパソコンの中だけの状態。クラウド=インターネット上のサーバーにある状態。クラウドに置けばどこからでもアクセスできる。",
+ camp:"CAMPはブラウザ完結のクラウド型ツールを中心に使うので、PCへの複雑なインストール作業はほぼありません。"},
+{c:"word",t:"ドメイン / URL",e:"domain / URL",one:"Webサイトの「住所」。",
+ what:"URL=サイトの完全な住所(https://system-camp.vercel.app/ など)。ドメイン=その中の「system-camp.vercel.app」の部分。独自ドメインは有料で取得できる。",
+ camp:"Vercelなら「好きな名前.vercel.app」が無料でもらえます。まずはこれで十分。"},
+{c:"word",t:"CSV",e:"シーエスブイ",one:"データをカンマ区切りで並べた「一番シンプルな表データ」。",
+ what:"「名前,金額,日付」のようにカンマで区切っただけのテキストファイル。銀行やほとんどの業務ソフトがこの形式でデータを出せる。",
+ camp:"銀行の入出金明細CSVを読み込んで自動照合…といった処理は実案件の定番。CSVを制する者は業務システムを制します。"},
+{c:"word",t:"バグ / デバッグ",e:"bug / debug",one:"「不具合」と「不具合退治」。",
+ what:"バグ=プログラムが意図通り動かない不具合。デバッグ=その原因を探して直す作業。エラー文はAIに貼れば解説してくれる。",
+ camp:"CAMP流デバッグは「エラー文をそのままAIに貼る」から始まります。怖がらなくてOK、エラーは手がかりです。"},
+{c:"word",t:"リリース / 納品",e:"release",one:"完成したシステムを「使える状態で渡す」こと。",
+ what:"リリース=システムを公開して使い始められる状態にすること。納品=クライアントに成果物を引き渡すこと。",
+ camp:"CAMPのゴールは3ヶ月目の「案件をまるごと納品」。この経験があなたの「実務経験」になります。"},
+{c:"word",t:"実案件",e:"real project",one:"練習じゃない、「実際に企業で使われる」本物の仕事。",
+ what:"サンプルや練習課題ではなく、実在するクライアントの業務のために作るシステムのこと。",
+ camp:"CAMPの教材はすべてこれ。緊張感も達成感も桁違いで、だからこそ力がつきます。"},
+];
+
+const list=document.getElementById('list'), q=document.getElementById('q'),
+      cats=document.getElementById('cats'), count=document.getElementById('count'),
+      nores=document.getElementById('noresult');
+const CATNAMES={basic:"基本ツール",ai:"AI開発",web:"Web開発",auto:"自動化・連携",word:"よく出る言葉"};
+let cat="all";
+
+function render(){
+  const kw=q.value.trim().toLowerCase();
+  list.innerHTML="";
+  let shown=0, lastCat="";
+  TERMS.forEach(x=>{
+    if(cat!=="all"&&x.c!==cat)return;
+    const hay=(x.t+x.e+x.one+x.what+x.camp).toLowerCase();
+    if(kw&&!hay.includes(kw))return;
+    if(x.c!==lastCat){
+      lastCat=x.c;
+      const h=document.createElement('p');
+      h.className='section-title'; h.textContent='## '+CATNAMES[x.c];
+      list.appendChild(h);
+    }
+    const el=document.createElement('div');
+    el.className='card';
+    el.innerHTML=`<div class="head"><span class="term">${x.t}</span><span class="en">${x.e}</span><span class="tag">${CATNAMES[x.c]}</span></div>
+      <p class="one"><span>${x.one}</span></p>
+      <dl><dt>&gt; これは何?</dt><dd>${x.what}</dd>
+      <dt>&gt; CAMPでは</dt><dd>${x.camp}</dd></dl>`;
+    list.appendChild(el); shown++;
+  });
+  count.textContent=`${shown} / ${TERMS.length} 件を表示中`;
+  nores.style.display=shown?'none':'block';
+}
+q.addEventListener('input',render);
+cats.addEventListener('click',e=>{
+  const b=e.target.closest('.cat'); if(!b)return;
+  cats.querySelectorAll('.cat').forEach(c=>c.classList.remove('on'));
+  b.classList.add('on'); cat=b.dataset.cat; render();
+});
+render();
+</script>
+</body>
+</html>
